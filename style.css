@@ -38,11 +38,11 @@ label {
 }
 
 .input-label {
-    color: rgb(255, 85, 85);
+    color: rgb(255, 0, 0);
 }
 
 .output-label {
-    color: rgb(80, 255, 120);
+    color: rgb(0, 255, 0);
 }
 
 textarea {
