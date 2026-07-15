@@ -54,7 +54,6 @@ function encrypt(text) {
             } else {
                 result += number + " ";
             }
-
         } else {
             result += encryptSpecial(original) + " ";
         }
@@ -78,16 +77,23 @@ function decrypt(text) {
         } else {
             try {
                 const isUpper = containsCapitalSymbol(part);
-                const number = isUpper ? convertSymbolsToNumber(part) : parseInt(part);
+                const number = isUpper
+                    ? convertSymbolsToNumber(part)
+                    : parseInt(part, 10);
 
                 if (number >= 1 && number <= 26) {
-                    const changed = String.fromCharCode("a".charCodeAt(0) + (26 - number));
+                    const changed = String.fromCharCode(
+                        "a".charCodeAt(0) + (26 - number)
+                    );
+
                     const original = reverseChangeLetter(changed);
 
-                    result += isUpper ? original.toUpperCase() : original;
+                    result += isUpper
+                        ? original.toUpperCase()
+                        : original;
                 }
-            } catch (e) {
-                // ignore invalid parts
+            } catch (error) {
+                /* Ignore invalid parts. */
             }
         }
     }
@@ -95,37 +101,67 @@ function decrypt(text) {
     return result;
 }
 
-function isEnglishLetter(c) {
-    return /^[a-zA-Z]$/.test(c);
+function isEnglishLetter(character) {
+    return /^[a-zA-Z]$/.test(character);
 }
 
-function encryptSpecial(c) {
-    const code = c.charCodeAt(0);
+function encryptSpecial(character) {
+    const code = character.charCodeAt(0);
     return "§" + convertNumberToSymbols(code);
 }
 
 function decryptSpecial(token) {
     const symbols = token.substring(1);
     const code = convertSymbolsToNumber(symbols);
+
     return String.fromCharCode(code);
 }
 
 function convertNumberToSymbols(number) {
-    const str = String(number);
+    const numberString = String(number);
     let result = "";
 
-    for (const c of str) {
-        switch (c) {
-            case "1": result += "!"; break;
-            case "2": result += "@"; break;
-            case "3": result += "#"; break;
-            case "4": result += "$"; break;
-            case "5": result += "%"; break;
-            case "6": result += "?"; break;
-            case "7": result += "&"; break;
-            case "8": result += "*"; break;
-            case "9": result += "("; break;
-            case "0": result += ")"; break;
+    for (const character of numberString) {
+        switch (character) {
+            case "1":
+                result += "!";
+                break;
+
+            case "2":
+                result += "@";
+                break;
+
+            case "3":
+                result += "#";
+                break;
+
+            case "4":
+                result += "$";
+                break;
+
+            case "5":
+                result += "%";
+                break;
+
+            case "6":
+                result += "?";
+                break;
+
+            case "7":
+                result += "&";
+                break;
+
+            case "8":
+                result += "*";
+                break;
+
+            case "9":
+                result += "(";
+                break;
+
+            case "0":
+                result += ")";
+                break;
         }
     }
 
@@ -135,88 +171,223 @@ function convertNumberToSymbols(number) {
 function convertSymbolsToNumber(symbols) {
     let number = "";
 
-    for (const c of symbols) {
-        switch (c) {
-            case "!": number += "1"; break;
-            case "@": number += "2"; break;
-            case "#": number += "3"; break;
-            case "$": number += "4"; break;
-            case "%": number += "5"; break;
-            case "?": number += "6"; break;
-            case "&": number += "7"; break;
-            case "*": number += "8"; break;
-            case "(": number += "9"; break;
-            case ")": number += "0"; break;
+    for (const character of symbols) {
+        switch (character) {
+            case "!":
+                number += "1";
+                break;
+
+            case "@":
+                number += "2";
+                break;
+
+            case "#":
+                number += "3";
+                break;
+
+            case "$":
+                number += "4";
+                break;
+
+            case "%":
+                number += "5";
+                break;
+
+            case "?":
+                number += "6";
+                break;
+
+            case "&":
+                number += "7";
+                break;
+
+            case "*":
+                number += "8";
+                break;
+
+            case "(":
+                number += "9";
+                break;
+
+            case ")":
+                number += "0";
+                break;
         }
     }
 
-    return parseInt(number);
+    return parseInt(number, 10);
 }
 
-function containsCapitalSymbol(s) {
-    return /[!@#$%?&*()]/.test(s);
+function containsCapitalSymbol(text) {
+    return /[!@#$%?&*()]/.test(text);
 }
 
-function changeLetter(c) {
-    switch (c) {
-        case "a": return "o";
-        case "b": return "r";
-        case "c": return "v";
-        case "d": return "n";
-        case "e": return "a";
-        case "f": return "t";
-        case "g": return "l";
-        case "h": return "s";
-        case "i": return "e";
-        case "j": return "k";
-        case "k": return "d";
-        case "l": return "y";
-        case "m": return "u";
-        case "n": return "i";
-        case "o": return "h";
-        case "p": return "b";
-        case "q": return "c";
-        case "r": return "m";
-        case "s": return "g";
-        case "t": return "p";
-        case "u": return "w";
-        case "v": return "f";
-        case "w": return "x";
-        case "x": return "q";
-        case "y": return "z";
-        case "z": return "j";
-        default: return c;
+function changeLetter(character) {
+    switch (character) {
+        case "a":
+            return "o";
+
+        case "b":
+            return "r";
+
+        case "c":
+            return "v";
+
+        case "d":
+            return "n";
+
+        case "e":
+            return "a";
+
+        case "f":
+            return "t";
+
+        case "g":
+            return "l";
+
+        case "h":
+            return "s";
+
+        case "i":
+            return "e";
+
+        case "j":
+            return "k";
+
+        case "k":
+            return "d";
+
+        case "l":
+            return "y";
+
+        case "m":
+            return "u";
+
+        case "n":
+            return "i";
+
+        case "o":
+            return "h";
+
+        case "p":
+            return "b";
+
+        case "q":
+            return "c";
+
+        case "r":
+            return "m";
+
+        case "s":
+            return "g";
+
+        case "t":
+            return "p";
+
+        case "u":
+            return "w";
+
+        case "v":
+            return "f";
+
+        case "w":
+            return "x";
+
+        case "x":
+            return "q";
+
+        case "y":
+            return "z";
+
+        case "z":
+            return "j";
+
+        default:
+            return character;
     }
 }
 
-function reverseChangeLetter(c) {
-    switch (c) {
-        case "o": return "a";
-        case "r": return "b";
-        case "v": return "c";
-        case "n": return "d";
-        case "a": return "e";
-        case "t": return "f";
-        case "l": return "g";
-        case "s": return "h";
-        case "e": return "i";
-        case "k": return "j";
-        case "d": return "k";
-        case "y": return "l";
-        case "u": return "m";
-        case "i": return "n";
-        case "h": return "o";
-        case "b": return "p";
-        case "c": return "q";
-        case "m": return "r";
-        case "g": return "s";
-        case "p": return "t";
-        case "w": return "u";
-        case "f": return "v";
-        case "x": return "w";
-        case "q": return "x";
-        case "z": return "y";
-        case "j": return "z";
-        default: return c;
+function reverseChangeLetter(character) {
+    switch (character) {
+        case "o":
+            return "a";
+
+        case "r":
+            return "b";
+
+        case "v":
+            return "c";
+
+        case "n":
+            return "d";
+
+        case "a":
+            return "e";
+
+        case "t":
+            return "f";
+
+        case "l":
+            return "g";
+
+        case "s":
+            return "h";
+
+        case "e":
+            return "i";
+
+        case "k":
+            return "j";
+
+        case "d":
+            return "k";
+
+        case "y":
+            return "l";
+
+        case "u":
+            return "m";
+
+        case "i":
+            return "n";
+
+        case "h":
+            return "o";
+
+        case "b":
+            return "p";
+
+        case "c":
+            return "q";
+
+        case "m":
+            return "r";
+
+        case "g":
+            return "s";
+
+        case "p":
+            return "t";
+
+        case "w":
+            return "u";
+
+        case "f":
+            return "v";
+
+        case "x":
+            return "w";
+
+        case "q":
+            return "x";
+
+        case "z":
+            return "y";
+
+        case "j":
+            return "z";
+
+        default:
+            return character;
     }
 }
