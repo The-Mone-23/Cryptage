@@ -1,222 +1,291 @@
-let inputChanged = true;
+:root {
+    color-scheme: dark;
 
-const inputArea = document.getElementById("inputArea");
-const outputArea = document.getElementById("outputArea");
+    --background: rgb(18, 18, 22);
+    --panel: rgb(28, 28, 34);
+    --button: rgb(45, 45, 55);
+    --button-hover: rgb(75, 75, 95);
 
-const encryptButton = document.getElementById("encryptButton");
-const decryptButton = document.getElementById("decryptButton");
-const clearButton = document.getElementById("clearButton");
+    --input-color: rgb(255, 85, 85);
+    --output-color: rgb(80, 255, 120);
 
-inputArea.addEventListener("input", () => {
-    inputChanged = true;
-});
+    --page-padding: clamp(16px, 3vw, 40px);
+    --page-gap: clamp(14px, 2vw, 22px);
+}
 
-encryptButton.addEventListener("click", () => {
-    if (inputChanged || outputArea.value.trim() === "") {
-        outputArea.value = encrypt(inputArea.value);
-        inputChanged = false;
-    } else {
-        outputArea.value = encrypt(outputArea.value);
+/* Prevent padding and borders from increasing element width */
+* {
+    box-sizing: border-box;
+}
+
+html {
+    /*
+     * Stops mobile browsers from automatically changing text sizes
+     * when rotating the device.
+     */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    min-width: 280px;
+
+    /*
+     * 100dvh follows the visible mobile viewport, including when
+     * browser controls appear or disappear.
+     */
+    min-height: 100vh;
+    min-height: 100dvh;
+
+    overflow-x: hidden;
+    background: var(--background);
+    color: white;
+    font-family: "Courier New", Courier, monospace;
+}
+
+.app {
+    width: 100%;
+    max-width: 1600px;
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin-inline: auto;
+
+    /*
+     * env(safe-area-inset-*) keeps content away from phone notches
+     * and rounded screen edges.
+     */
+    padding:
+        max(var(--page-padding), env(safe-area-inset-top))
+        max(var(--page-padding), env(safe-area-inset-right))
+        max(var(--page-padding), env(safe-area-inset-bottom))
+        max(var(--page-padding), env(safe-area-inset-left));
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--page-gap);
+}
+
+h1 {
+    margin: 0;
+    text-align: center;
+    color: rgb(230, 230, 230);
+
+    /* Automatically scales between phone and desktop sizes */
+    font-size: clamp(24px, 4vw, 36px);
+    line-height: 1.15;
+    letter-spacing: 0.05em;
+}
+
+section {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+label {
+    font-size: clamp(16px, 2vw, 18px);
+    font-weight: bold;
+}
+
+.input-label {
+    color: rgb(255, 0, 0);
+}
+
+.output-label {
+    color: rgb(0, 255, 0);
+}
+
+textarea {
+    display: block;
+    width: 100%;
+
+    /*
+     * The textareas use less vertical space on phones while still
+     * remaining large enough to use comfortably.
+     */
+    min-height: clamp(180px, 29dvh, 340px);
+
+    resize: none;
+    overflow: auto;
+
+    background: var(--panel);
+    border: 2px solid rgb(190, 190, 190);
+    border-radius: 8px;
+
+    padding: clamp(14px, 2vw, 20px);
+
+    color: white;
+    font-family: inherit;
+
+    /*
+     * Keeping the minimum at 16px prevents iPhones from zooming
+     * into a textarea when it receives focus.
+     */
+    font-size: clamp(16px, 2.1vw, 24px);
+    font-weight: bold;
+    line-height: 1.4;
+
+    outline: none;
+}
+
+textarea:focus {
+    border-color: white;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.14);
+}
+
+#inputArea {
+    color: var(--input-color);
+    caret-color: var(--input-color);
+}
+
+#outputArea {
+    color: var(--output-color);
+    caret-color: var(--output-color);
+}
+
+.buttons {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(10px, 2vw, 20px);
+}
+
+button {
+    min-width: 140px;
+    min-height: 48px;
+
+    appearance: none;
+    -webkit-appearance: none;
+
+    background: var(--button);
+    color: white;
+    border: 1px solid transparent;
+    border-radius: 8px;
+
+    padding: 13px 24px;
+
+    font-family: inherit;
+    font-size: clamp(16px, 2vw, 18px);
+    font-weight: bold;
+
+    cursor: pointer;
+
+    /*
+     * Prevents rapid taps from being interpreted as a double-tap zoom.
+     * Normal page pinch-to-zoom still works.
+     */
+    touch-action: manipulation;
+
+    /*
+     * Prevents button text from being selected while repeatedly tapping.
+     */
+    user-select: none;
+    -webkit-user-select: none;
+
+    /*
+     * Removes the large tap-highlight flash on mobile browsers.
+     */
+    -webkit-tap-highlight-color: transparent;
+
+    transition:
+        background-color 120ms ease,
+        transform 80ms ease;
+}
+
+/*
+ * Only apply hover effects on devices that actually have a mouse
+ * or trackpad. This prevents hover from becoming stuck on phones.
+ */
+@media (hover: hover) and (pointer: fine) {
+    button:hover {
+        background: var(--button-hover);
     }
-});
+}
 
-decryptButton.addEventListener("click", () => {
-    if (inputChanged || outputArea.value.trim() === "") {
-        outputArea.value = decrypt(inputArea.value);
-        inputChanged = false;
-    } else {
-        outputArea.value = decrypt(outputArea.value);
-    }
-});
+button:active {
+    background: var(--button-hover);
+    transform: translateY(1px);
+}
 
-clearButton.addEventListener("click", () => {
-    inputArea.value = "";
-    outputArea.value = "";
-    inputChanged = true;
-    inputArea.focus();
-});
+button:focus-visible {
+    outline: 3px solid white;
+    outline-offset: 3px;
+}
 
-function encrypt(text) {
-    let result = "";
+/*
+ * Desktop, large tablet, and landscape-device layout:
+ * input and output are displayed next to each other.
+ */
+@media (min-width: 900px),
+       (orientation: landscape) and (min-width: 700px) {
 
-    for (let i = 0; i < text.length; i++) {
-        const original = text[i];
-
-        if (isEnglishLetter(original)) {
-            const isUpper = original >= "A" && original <= "Z";
-            const lower = original.toLowerCase();
-
-            const changed = changeLetter(lower);
-            const number = 26 - (changed.charCodeAt(0) - "a".charCodeAt(0));
-
-            if (isUpper) {
-                result += convertNumberToSymbols(number) + " ";
-            } else {
-                result += number + " ";
-            }
-
-        } else {
-            result += encryptSpecial(original) + " ";
-        }
+    .app {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-rows: auto auto auto;
+        align-content: start;
     }
 
-    return result.trim();
-}
-
-function decrypt(text) {
-    let result = "";
-
-    if (text.trim() === "") {
-        return "";
+    h1,
+    .buttons {
+        grid-column: 1 / -1;
     }
 
-    const parts = text.trim().split(/\s+/);
-
-    for (const part of parts) {
-        if (part.startsWith("§")) {
-            result += decryptSpecial(part);
-        } else {
-            try {
-                const isUpper = containsCapitalSymbol(part);
-                const number = isUpper ? convertSymbolsToNumber(part) : parseInt(part);
-
-                if (number >= 1 && number <= 26) {
-                    const changed = String.fromCharCode("a".charCodeAt(0) + (26 - number));
-                    const original = reverseChangeLetter(changed);
-
-                    result += isUpper ? original.toUpperCase() : original;
-                }
-            } catch (e) {
-                // ignore invalid parts
-            }
-        }
-    }
-
-    return result;
-}
-
-function isEnglishLetter(c) {
-    return /^[a-zA-Z]$/.test(c);
-}
-
-function encryptSpecial(c) {
-    const code = c.charCodeAt(0);
-    return "§" + convertNumberToSymbols(code);
-}
-
-function decryptSpecial(token) {
-    const symbols = token.substring(1);
-    const code = convertSymbolsToNumber(symbols);
-    return String.fromCharCode(code);
-}
-
-function convertNumberToSymbols(number) {
-    const str = String(number);
-    let result = "";
-
-    for (const c of str) {
-        switch (c) {
-            case "1": result += "!"; break;
-            case "2": result += "@"; break;
-            case "3": result += "#"; break;
-            case "4": result += "$"; break;
-            case "5": result += "%"; break;
-            case "6": result += "?"; break;
-            case "7": result += "&"; break;
-            case "8": result += "*"; break;
-            case "9": result += "("; break;
-            case "0": result += ")"; break;
-        }
-    }
-
-    return result;
-}
-
-function convertSymbolsToNumber(symbols) {
-    let number = "";
-
-    for (const c of symbols) {
-        switch (c) {
-            case "!": number += "1"; break;
-            case "@": number += "2"; break;
-            case "#": number += "3"; break;
-            case "$": number += "4"; break;
-            case "%": number += "5"; break;
-            case "?": number += "6"; break;
-            case "&": number += "7"; break;
-            case "*": number += "8"; break;
-            case "(": number += "9"; break;
-            case ")": number += "0"; break;
-        }
-    }
-
-    return parseInt(number);
-}
-
-function containsCapitalSymbol(s) {
-    return /[!@#$%?&*()]/.test(s);
-}
-
-function changeLetter(c) {
-    switch (c) {
-        case "a": return "o";
-        case "b": return "r";
-        case "c": return "v";
-        case "d": return "n";
-        case "e": return "a";
-        case "f": return "t";
-        case "g": return "l";
-        case "h": return "s";
-        case "i": return "e";
-        case "j": return "k";
-        case "k": return "d";
-        case "l": return "y";
-        case "m": return "u";
-        case "n": return "i";
-        case "o": return "h";
-        case "p": return "b";
-        case "q": return "c";
-        case "r": return "m";
-        case "s": return "g";
-        case "t": return "p";
-        case "u": return "w";
-        case "v": return "f";
-        case "w": return "x";
-        case "x": return "q";
-        case "y": return "z";
-        case "z": return "j";
-        default: return c;
+    textarea {
+        min-height: clamp(280px, 60dvh, 720px);
     }
 }
 
-function reverseChangeLetter(c) {
-    switch (c) {
-        case "o": return "a";
-        case "r": return "b";
-        case "v": return "c";
-        case "n": return "d";
-        case "a": return "e";
-        case "t": return "f";
-        case "l": return "g";
-        case "s": return "h";
-        case "e": return "i";
-        case "k": return "j";
-        case "d": return "k";
-        case "y": return "l";
-        case "u": return "m";
-        case "i": return "n";
-        case "h": return "o";
-        case "b": return "p";
-        case "c": return "q";
-        case "m": return "r";
-        case "g": return "s";
-        case "p": return "t";
-        case "w": return "u";
-        case "f": return "v";
-        case "x": return "w";
-        case "q": return "x";
-        case "z": return "y";
-        case "j": return "z";
-        default: return c;
+/*
+ * Phone layout:
+ * ENCRYPT and DECRYPT share one row, while CLEAR uses the full width.
+ */
+@media (max-width: 599px) {
+    :root {
+        --page-padding: 14px;
+        --page-gap: 14px;
+    }
+
+    h1 {
+        font-size: clamp(23px, 8vw, 30px);
+    }
+
+    textarea {
+        min-height: clamp(170px, 27dvh, 290px);
+        border-radius: 6px;
+    }
+
+    .buttons {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    button {
+        width: 100%;
+        min-width: 0;
+        padding-inline: 8px;
+        font-size: 16px;
+    }
+
+    #clearButton {
+        grid-column: 1 / -1;
+    }
+}
+
+/*
+ * Very narrow devices:
+ * place all three buttons on separate rows.
+ */
+@media (max-width: 360px) {
+    .buttons {
+        grid-template-columns: 1fr;
+    }
+
+    #clearButton {
+        grid-column: auto;
     }
 }
