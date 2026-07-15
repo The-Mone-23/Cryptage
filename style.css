@@ -1,40 +1,92 @@
+:root {
+    color-scheme: dark;
+
+    --background: rgb(18, 18, 22);
+    --panel: rgb(28, 28, 34);
+    --button: rgb(45, 45, 55);
+    --button-hover: rgb(75, 75, 95);
+
+    --input-color: rgb(255, 85, 85);
+    --output-color: rgb(80, 255, 120);
+
+    --page-padding: clamp(16px, 3vw, 40px);
+    --page-gap: clamp(14px, 2vw, 22px);
+}
+
+/* Prevent padding and borders from increasing element width */
 * {
     box-sizing: border-box;
 }
 
+html {
+    /*
+     * Stops mobile browsers from automatically changing text sizes
+     * when rotating the device.
+     */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
 body {
     margin: 0;
-    background: rgb(18, 18, 22);
+    min-width: 280px;
+
+    /*
+     * 100dvh follows the visible mobile viewport, including when
+     * browser controls appear or disappear.
+     */
+    min-height: 100vh;
+    min-height: 100dvh;
+
+    overflow-x: hidden;
+    background: var(--background);
     color: white;
-    font-family: "Courier New", monospace;
+    font-family: "Courier New", Courier, monospace;
 }
 
 .app {
-    width: 100vw;
+    width: 100%;
+    max-width: 1600px;
     min-height: 100vh;
-    padding: 30px 40px;
+    min-height: 100dvh;
+    margin-inline: auto;
+
+    /*
+     * env(safe-area-inset-*) keeps content away from phone notches
+     * and rounded screen edges.
+     */
+    padding:
+        max(var(--page-padding), env(safe-area-inset-top))
+        max(var(--page-padding), env(safe-area-inset-right))
+        max(var(--page-padding), env(safe-area-inset-bottom))
+        max(var(--page-padding), env(safe-area-inset-left));
+
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: var(--page-gap);
 }
 
 h1 {
-    text-align: center;
     margin: 0;
-    font-size: 32px;
+    text-align: center;
     color: rgb(230, 230, 230);
+
+    /* Automatically scales between phone and desktop sizes */
+    font-size: clamp(24px, 4vw, 36px);
+    line-height: 1.15;
+    letter-spacing: 0.05em;
 }
 
 section {
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    flex: 1;
 }
 
 label {
+    font-size: clamp(16px, 2vw, 18px);
     font-weight: bold;
-    font-size: 18px;
 }
 
 .input-label {
@@ -46,45 +98,194 @@ label {
 }
 
 textarea {
+    display: block;
     width: 100%;
-    height: 35vh;
+
+    /*
+     * The textareas use less vertical space on phones while still
+     * remaining large enough to use comfortably.
+     */
+    min-height: clamp(180px, 29dvh, 340px);
+
     resize: none;
-    background: rgb(28, 28, 34);
+    overflow: auto;
+
+    background: var(--panel);
     border: 2px solid rgb(190, 190, 190);
-    padding: 20px;
-    font-family: "Courier New", monospace;
-    font-size: 24px;
+    border-radius: 8px;
+
+    padding: clamp(14px, 2vw, 20px);
+
+    color: white;
+    font-family: inherit;
+
+    /*
+     * Keeping the minimum at 16px prevents iPhones from zooming
+     * into a textarea when it receives focus.
+     */
+    font-size: clamp(16px, 2.1vw, 24px);
     font-weight: bold;
+    line-height: 1.4;
+
     outline: none;
 }
 
+textarea:focus {
+    border-color: white;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.14);
+}
+
 #inputArea {
-    color: rgb(255, 85, 85);
-    caret-color: rgb(255, 85, 85);
+    color: var(--input-color);
+    caret-color: var(--input-color);
 }
 
 #outputArea {
-    color: rgb(80, 255, 120);
-    caret-color: rgb(80, 255, 120);
+    color: var(--output-color);
+    caret-color: var(--output-color);
 }
 
 .buttons {
+    width: 100%;
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    gap: 20px;
+    gap: clamp(10px, 2vw, 20px);
 }
 
 button {
-    background: rgb(45, 45, 55);
+    min-width: 140px;
+    min-height: 48px;
+
+    appearance: none;
+    -webkit-appearance: none;
+
+    background: var(--button);
     color: white;
-    border: none;
-    padding: 14px 28px;
-    font-family: "Courier New", monospace;
-    font-size: 18px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+
+    padding: 13px 24px;
+
+    font-family: inherit;
+    font-size: clamp(16px, 2vw, 18px);
     font-weight: bold;
+
     cursor: pointer;
+
+    /*
+     * Prevents rapid taps from being interpreted as a double-tap zoom.
+     * Normal page pinch-to-zoom still works.
+     */
+    touch-action: manipulation;
+
+    /*
+     * Prevents button text from being selected while repeatedly tapping.
+     */
+    user-select: none;
+    -webkit-user-select: none;
+
+    /*
+     * Removes the large tap-highlight flash on mobile browsers.
+     */
+    -webkit-tap-highlight-color: transparent;
+
+    transition:
+        background-color 120ms ease,
+        transform 80ms ease;
 }
 
-button:hover {
-    background: rgb(75, 75, 95);
+/*
+ * Only apply hover effects on devices that actually have a mouse
+ * or trackpad. This prevents hover from becoming stuck on phones.
+ */
+@media (hover: hover) and (pointer: fine) {
+    button:hover {
+        background: var(--button-hover);
+    }
+}
+
+button:active {
+    background: var(--button-hover);
+    transform: translateY(1px);
+}
+
+button:focus-visible {
+    outline: 3px solid white;
+    outline-offset: 3px;
+}
+
+/*
+ * Desktop, large tablet, and landscape-device layout:
+ * input and output are displayed next to each other.
+ */
+@media (min-width: 900px),
+       (orientation: landscape) and (min-width: 700px) {
+
+    .app {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-rows: auto auto auto;
+        align-content: start;
+    }
+
+    h1,
+    .buttons {
+        grid-column: 1 / -1;
+    }
+
+    textarea {
+        min-height: clamp(280px, 60dvh, 720px);
+    }
+}
+
+/*
+ * Phone layout:
+ * ENCRYPT and DECRYPT share one row, while CLEAR uses the full width.
+ */
+@media (max-width: 599px) {
+    :root {
+        --page-padding: 14px;
+        --page-gap: 14px;
+    }
+
+    h1 {
+        font-size: clamp(23px, 8vw, 30px);
+    }
+
+    textarea {
+        min-height: clamp(170px, 27dvh, 290px);
+        border-radius: 6px;
+    }
+
+    .buttons {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    button {
+        width: 100%;
+        min-width: 0;
+        padding-inline: 8px;
+        font-size: 16px;
+    }
+
+    #clearButton {
+        grid-column: 1 / -1;
+    }
+}
+
+/*
+ * Very narrow devices:
+ * place all three buttons on separate rows.
+ */
+@media (max-width: 360px) {
+    .buttons {
+        grid-template-columns: 1fr;
+    }
+
+    #clearButton {
+        grid-column: auto;
+    }
 }
